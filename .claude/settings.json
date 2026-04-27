@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Write|Edit|Glob|Grep|Bash|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 '/Users/mercedesreibe/Desktop/Claude AI Projects/harvey-specter/.claude/check_path.py'"
+          }
+        ]
+      }
+    ]
+  }
+}
