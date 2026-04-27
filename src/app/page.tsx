@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-black">
-      <h1 className="text-6xl font-bold tracking-tight text-white">
+      <h1 className="text-6xl font-bold tracking-tight font-serif" style={{ color: '#bbff00' }}>
         cool mercedes
       </h1>
     </div>
