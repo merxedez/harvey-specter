@@ -1,16 +1,25 @@
-import { Cormorant_Garamond } from 'next/font/google'
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '600'],
-})
+import HeroSection from '@/components/HeroSection'
+import AboutSection from '@/components/AboutSection'
+import BioSection from '@/components/BioSection'
+import PhotoSection from '@/components/PhotoSection'
+import ServicesSection from '@/components/ServicesSection'
+import WorkSection from '@/components/WorkSection'
+import TestimonialsSection from '@/components/TestimonialsSection'
+import NewsSection from '@/components/NewsSection'
+import Footer from '@/components/Footer'
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black">
-      <h1 className={`${cormorant.className} text-7xl font-light tracking-normal`} style={{ color: '#bbff00' }}>
-        cool mercedes
-      </h1>
-    </div>
-  );
+    <main>
+      <HeroSection />
+      <AboutSection />
+      <BioSection />
+      <PhotoSection />
+      <ServicesSection />
+      <WorkSection />
+      <TestimonialsSection />
+      <NewsSection />
+      <Footer />
+    </main>
+  )
 }
