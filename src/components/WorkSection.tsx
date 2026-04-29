@@ -1,9 +1,8 @@
+import { client } from '@/sanity/lib/client'
+import { PROJECTS_QUERY, type SanityProject } from '@/sanity/lib/queries'
+
 const interStyle = { fontFamily: 'var(--font-inter, Inter, sans-serif)' }
 
-const imgSurfers = 'https://www.figma.com/api/mcp/asset/a4ad994f-b235-4f8e-a39c-85b679598471'
-const imgCyberpunk = 'https://www.figma.com/api/mcp/asset/020f97d8-dc55-4f53-a988-d75aa947496a'
-const imgAgency = 'https://www.figma.com/api/mcp/asset/b2a28d18-a2a5-443f-bd75-100de6d2c45f'
-const imgMinimal = 'https://www.figma.com/api/mcp/asset/f618442e-417e-41bc-bd5f-a4d53cda994c'
 const imgArrow = 'https://www.figma.com/api/mcp/asset/db1dc7fe-18c3-4637-8843-a70bd45e866a'
 
 function CornerTL() {
@@ -35,13 +34,14 @@ function CornerBR() {
   )
 }
 
-const tags = ['Social Media', 'Photography']
-
-function ProjectCard({ img, title, height }: { img: string; title: string; height: string }) {
+function ProjectCard({ project, height, titleSize = '36px' }: { project: SanityProject; height: string; titleSize?: string }) {
+  const tags = project.tags ?? ['Social Media', 'Photography']
   return (
     <div className="flex flex-col gap-[10px] w-full">
-      <div className="relative w-full overflow-hidden" style={{ height }}>
-        <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      <a href={project.link ?? '#'} className="block relative w-full overflow-hidden" style={{ height }}>
+        {project.imageUrl && (
+          <img src={project.imageUrl} alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
+        )}
         <div className="absolute bottom-4 left-4 flex gap-3">
           {tags.map((tag) => (
             <div
@@ -53,49 +53,17 @@ function ProjectCard({ img, title, height }: { img: string; title: string; heigh
             </div>
           ))}
         </div>
-      </div>
+      </a>
       <div className="flex items-center justify-between">
         <p
-          className="font-black uppercase text-black text-[36px] leading-[1.1] whitespace-nowrap"
-          style={{ ...interStyle, letterSpacing: '-0.04em' }}
+          className="font-black uppercase text-black leading-[1.1] whitespace-nowrap"
+          style={{ ...interStyle, fontSize: titleSize, letterSpacing: '-0.04em' }}
         >
-          {title}
+          {project.title}
         </p>
-        <div className="w-8 h-8 flex-none -rotate-90">
+        <a href={project.link ?? '#'} className="w-8 h-8 flex-none -rotate-90 block">
           <img src={imgArrow} alt="" className="w-full h-full" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function MobileProjectCard({ img, title }: { img: string; title: string }) {
-  return (
-    <div className="flex flex-col gap-[10px] w-full">
-      <div className="relative w-full overflow-hidden h-[390px]">
-        <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute bottom-4 left-4 flex gap-3">
-          {tags.map((tag) => (
-            <div
-              key={tag}
-              className="backdrop-blur-[10px] bg-white/30 px-2 py-1 rounded-full text-[#111] text-[14px] font-medium"
-              style={{ ...interStyle, letterSpacing: '-0.04em' }}
-            >
-              {tag}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <p
-          className="font-black uppercase text-black text-[24px] leading-[1.1] whitespace-nowrap"
-          style={{ ...interStyle, letterSpacing: '-0.04em' }}
-        >
-          {title}
-        </p>
-        <div className="w-8 h-8 flex-none -rotate-90">
-          <img src={imgArrow} alt="" className="w-full h-full" />
-        </div>
+        </a>
       </div>
     </div>
   )
@@ -109,10 +77,7 @@ function CtaBox({ full }: { full?: boolean }) {
         <CornerBL />
       </div>
       <div className="flex-1 flex flex-col gap-[10px] justify-center py-3">
-        <p
-          className="italic text-[#1f1f1f] text-[14px] leading-[1.3]"
-          style={{ ...interStyle, letterSpacing: '-0.04em' }}
-        >
+        <p className="italic text-[#1f1f1f] text-[14px] leading-[1.3]" style={{ ...interStyle, letterSpacing: '-0.04em' }}>
           Discover how my creativity transforms ideas into impactful digital experiences — schedule a call with me to get started.
         </p>
         <button className="self-start px-4 py-3 bg-black text-white text-[14px] font-medium rounded-full" style={{ ...interStyle, letterSpacing: '-0.04em' }}>
@@ -127,27 +92,30 @@ function CtaBox({ full }: { full?: boolean }) {
   )
 }
 
-export default function WorkSection() {
+const desktopHeights = ['744px', '699px', '699px', '744px']
+
+export default async function WorkSection() {
+  const projects = await client.fetch<SanityProject[]>(PROJECTS_QUERY, {}, { next: { revalidate: 60 } })
+
+  const leftCol: SanityProject[] = projects?.slice(0, 2) ?? []
+  const rightCol: SanityProject[] = projects?.slice(2, 4) ?? []
+
+  if (!projects?.length) return null
+
   return (
     <section className="w-full bg-[#f5f5f2] px-4 md:px-8 py-12 md:py-[80px]">
 
       {/* Header row */}
       <div className="flex items-start justify-between mb-[61px]">
         <div className="flex gap-[10px] items-start uppercase whitespace-nowrap">
-          <div
-            className="font-light text-black leading-[0.86]"
-            style={{ ...interStyle, fontSize: 'max(32px, 6.67vw)', letterSpacing: '-0.08em' }}
-          >
+          <div className="font-light text-black leading-[0.86]" style={{ ...interStyle, fontSize: 'max(32px, 6.67vw)', letterSpacing: '-0.08em' }}>
             <p className="leading-[0.86] mb-0">Selected</p>
             <p className="leading-[0.86]">Work</p>
           </div>
           <span className="font-mono text-[#1f1f1f] text-[14px] leading-[1.1] pt-1">004</span>
         </div>
         <div className="hidden md:flex items-center justify-center" style={{ width: '15px', height: '110px' }}>
-          <p
-            className="font-mono text-[#1f1f1f] text-[14px] leading-[1.1] uppercase whitespace-nowrap"
-            style={{ transform: 'rotate(-90deg)' }}
-          >
+          <p className="font-mono text-[#1f1f1f] text-[14px] leading-[1.1] uppercase whitespace-nowrap" style={{ transform: 'rotate(-90deg)' }}>
             [ portfolio ]
           </p>
         </div>
@@ -155,26 +123,24 @@ export default function WorkSection() {
 
       {/* Desktop: two-column staggered grid */}
       <div className="hidden md:flex gap-6 items-end">
-        {/* Left column */}
         <div className="flex-1 min-w-0 flex flex-col gap-[10px]">
-          <ProjectCard img={imgSurfers} title="Surfers paradise" height="744px" />
-          <ProjectCard img={imgCyberpunk} title="Cyberpunk caffe" height="699px" />
+          {leftCol.map((p, i) => (
+            <ProjectCard key={p._id} project={p} height={desktopHeights[i]} />
+          ))}
           <CtaBox />
         </div>
-
-        {/* Right column, offset down */}
         <div className="flex-1 min-w-0 flex flex-col gap-[117px] pt-[240px]">
-          <ProjectCard img={imgAgency} title="Agency 976" height="699px" />
-          <ProjectCard img={imgMinimal} title="Minimal Playground" height="744px" />
+          {rightCol.map((p, i) => (
+            <ProjectCard key={p._id} project={p} height={desktopHeights[i + 2]} />
+          ))}
         </div>
       </div>
 
       {/* Mobile: single column */}
       <div className="md:hidden flex flex-col gap-6">
-        <MobileProjectCard img={imgSurfers} title="Surfers paradise" />
-        <MobileProjectCard img={imgCyberpunk} title="Cyberpunk caffe" />
-        <MobileProjectCard img={imgAgency} title="Agency 976" />
-        <MobileProjectCard img={imgMinimal} title="Minimal Playground" />
+        {projects.map((p) => (
+          <ProjectCard key={p._id} project={p} height="390px" titleSize="24px" />
+        ))}
         <CtaBox full />
       </div>
 
