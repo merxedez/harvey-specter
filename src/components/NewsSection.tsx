@@ -68,9 +68,8 @@ export default function NewsSection() {
         {/* 3 article cards */}
         <div className="flex flex-1 min-w-0 gap-0 items-start">
           {articles.map((a, i) => (
-            <>
+            <div key={i} className="contents">
               <div
-                key={i}
                 className="flex flex-col gap-4 flex-1 min-w-0"
                 style={{ paddingTop: a.offset ? '120px' : 0 }}
               >
@@ -83,9 +82,9 @@ export default function NewsSection() {
                 <ReadMoreLink />
               </div>
               {i < articles.length - 1 && (
-                <div key={`div-${i}`} className="w-px bg-[#1f1f1f] self-stretch mx-8" />
+                <div className="w-px bg-[#1f1f1f] self-stretch mx-8" />
               )}
-            </>
+            </div>
           ))}
         </div>
 
